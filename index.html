@@ -13,21 +13,18 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script>
       $(document).ready(function () {
-        var dadosTabela = {}; // Objeto para armazenar os dados da tabela
-        var cellIndex;
-
-        // Criar a tabela
-        var table = $("<table>").addClass("my-table");
-        var tbody = $("<tbody>");
-        var row;
+        let dadosTabela = JSON.parse(localStorage.getItem("dadosTabela")) || {}; // Obter os dados salvos no localStorage ou inicializar um objeto vazio
+        let cellIndex;
+        let table = $("<table>").addClass("my-table");
+        let tbody = $("<tbody>");
+        let row;
 
         // Loop para adicionar valores de 1 a 100 na tabela
-        for (var i = 1; i <= 100; i++) {
-          // Criar nova linha a cada múltiplo de 10
+        for (let i = 1; i <= 100; i++) {
           if (i % 10 === 1) {
             row = $("<tr>");
           }
-          var cell = $("<td>")
+          let cell = $("<td>")
             .text(i)
             .attr("id", "cell-" + i);
           row.append(cell);
@@ -40,8 +37,8 @@
             .on("mouseleave", function () {
               $(this).css("background-color", "").css("color", "");
               // Verificar novamente a condição e aplicar o fundo laranja ou verde se necessário
-              var cellId = $(this).attr("id").split("-")[1];
-              var cellData = dadosTabela[cellId];
+              let cellId = $(this).attr("id").split("-")[1];
+              let cellData = dadosTabela[cellId];
               if (cellData) {
                 if (cellData.nome && !cellData.pago) {
                   $(this)
@@ -55,7 +52,6 @@
               }
             });
 
-          // Adicionar evento de clique para abrir o modal ao clicar em uma célula
           cell.on("click", function () {
             cellIndex = $(this).text();
             $("#myModal").modal("show");
@@ -67,16 +63,13 @@
           }
         }
 
-        // Adicionar o tbody à tabela
         table.append(tbody);
-
-        // Adicionar a tabela ao elemento com ID "tabela-container"
         $("#tabela-container").append(table);
 
         // Função para verificar as células e aplicar a cor de fundo laranja ou verde
         function verificarCores() {
-          for (var i = 1; i <= 100; i++) {
-            var cellData = dadosTabela[i];
+          for (let i = 1; i <= 100; i++) {
+            let cellData = dadosTabela[i];
             if (cellData) {
               if (cellData.nome && !cellData.pago) {
                 $("#cell-" + i)
@@ -101,22 +94,17 @@
 
         // Evento do botão salvar no modal
         $("#btnSalvar").on("click", function () {
-          var nome = $("#nome").val();
-          var pago = $("#pago").is(":checked");
+          let nome = $("#nome").val();
+          let pago = $("#pago").is(":checked");
 
           dadosTabela[cellIndex] = { nome: nome, pago: pago };
-
-          // Fechar o modal
+          localStorage.setItem("dadosTabela", JSON.stringify(dadosTabela)); // Salvar os dados no localStorage
           $("#myModal").modal("hide");
-
-          // Limpar o formulário do modal
           $("#nome").val("");
           $("#pago").prop("checked", false);
 
           // Verificar as células e aplicar a cor de fundo laranja ou verde, se necessário
           verificarCores();
-
-          console.log(dadosTabela); // Imprime o objeto no console para verificar os dados salvos
         });
 
         // Verificar as células quando a página for carregada
@@ -133,8 +121,8 @@
         border: 1px solid #dddddd;
         text-align: center;
         padding: 8px;
-        transition: background-color 0.3s, color 0.3s; /* Adiciona uma transição suave para a mudança de cor */
-        cursor: pointer; /* Muda o cursor para indicar que a célula é clicável */
+        transition: background-color 0.3s, color 0.3s;
+        cursor: pointer;
       }
     </style>
   </head>
